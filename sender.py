@@ -1,5 +1,6 @@
 # importing the requests library 
 import requests 
+import sys
 import hashlib
 import time
 import RPi.GPIO as GPIO
@@ -44,5 +45,6 @@ if __name__ == '__main__':
 
 	except:
 		print("Exception encountered... Cleaning up GPIO pins")
+		print(sys.exc_info()[0])
 	finally:
 		GPIO.cleanup()

@@ -1,8 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 
-PIN_COM = 8
-PIN0 = 10
+PIN_COM = 13
+PIN0 = 11
 PIN1 = 12
 PIN2 = 16
 PIN3 = 18
@@ -18,6 +18,8 @@ PIN_LEDR = 3
 PIN_LEDG = 5
 PIN_LOCK = 7
 
+PIN_ARR = [PIN0, PIN1, PIN2, PIN3, PIN4, PIN5, PIN6, PIN7, PIN8, PIN9, PIN_STR, PIN_PND]
+
 CODE_LEN = 4
 BLINK_DUR = 1
 
@@ -28,18 +30,8 @@ def keypad_init():
     GPIO.setup(PIN_COM, GPIO.OUT)
     GPIO.output(PIN_COM, GPIO.HIGH)
     #Setup Inputs
-    GPIO.setup(PIN0, GPIO.IN)
-    GPIO.setup(PIN1, GPIO.IN)
-    GPIO.setup(PIN2, GPIO.IN)
-    GPIO.setup(PIN3, GPIO.IN)
-    GPIO.setup(PIN4, GPIO.IN)
-    GPIO.setup(PIN5, GPIO.IN)
-    GPIO.setup(PIN6, GPIO.IN)
-    GPIO.setup(PIN7, GPIO.IN)
-    GPIO.setup(PIN8, GPIO.IN)
-    GPIO.setup(PIN9, GPIO.IN)
-    GPIO.setup(PIN_STR, GPIO.IN)
-    GPIO.setup(PIN_PND, GPIO.IN)
+    for pin in PIN_ARR:
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     #Setup LEDs
     GPIO.setup(PIN_LEDR, GPIO.OUT)
     GPIO.setup(PIN_LEDG, GPIO.OUT)
@@ -55,6 +47,7 @@ def blink_green():
     GPIO.output(PIN_LEDG, GPIO.LOW)
     print("Unlocked")
     GPIO.output(PIN_LOCK, GPIO.HIGH)
+    time.sleep(1)
     a = read_keypad()
     print("Locked")
     GPIO.output(PIN_LOCK, GPIO.LOW)
@@ -67,30 +60,14 @@ def blink_red():
 
 def read_keypad():
     while(True):
-        if(GPIO.input(PIN0) == GPIO.HIGH):
-            return('0')
-        if(GPIO.input(PIN1) == GPIO.HIGH):
-            return('1')
-        if(GPIO.input(PIN2) == GPIO.HIGH):
-            return('2')
-        if(GPIO.input(PIN3) == GPIO.HIGH):
-            return('3')
-        if(GPIO.input(PIN4) == GPIO.HIGH):
-            return('4')
-        if(GPIO.input(PIN5) == GPIO.HIGH):
-            return('5')
-        if(GPIO.input(PIN6) == GPIO.HIGH):
-            return('6')
-        if(GPIO.input(PIN7) == GPIO.HIGH):
-            return('7')
-        if(GPIO.input(PIN8) == GPIO.HIGH):
-            return('8')
-        if(GPIO.input(PIN9) == GPIO.HIGH):
-            return('9')
-        if(GPIO.input(PIN_STR) == GPIO.HIGH):
-            return('*')
-        if(GPIO.input(PIN_PND) == GPIO.HIGH):
-            return('#')
+        for i,pin in enumerate(PIN_ARR):
+            if(GPIO.input(pin) == GPIO.HIGH):
+                if(i == 10):
+                    return('*')
+                elif(i == 11):
+                    return('#')
+                else:
+                    return(str(i))
 
 def get_code():
     #Get Code
@@ -103,7 +80,7 @@ def get_code():
         elif(str.isdigit(inChar)):
             print(inChar)
             code = code + inChar
-        time.sleep(1)
+        time.sleep(0.5)
     return code
     
     
